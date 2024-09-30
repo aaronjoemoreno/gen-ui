@@ -8,6 +8,7 @@ import {
 } from 'ai/rsc'
 import { Message, BotMessage } from './message'
 import { z } from 'zod'
+import { WeatherCardComponent } from '@/components/weather-card'
 
 type AIProviderNoActions = ReturnType<typeof createAI<AIState, UIState>>
 // typed wrapper *without* actions defined to avoid circular dependencies
@@ -71,17 +72,22 @@ export async function submitUserMessage(content: string) {
           location: z.string(),
         }),
         generate: async function* ({ location }) {
+          console.log('********************************')
+          console.log(location)
+          console.log('********************************')
           yield (
             <Message role="assistant">Loading weather for {location}</Message>
           )
           const { temperature } = await fetchWeatherData(location)
+
+          console.log('********************************')
+          console.log(location)
+          console.log('********************************')
           return (
-            <Message role="assistant">
-              <span>
-                The temperature in {location} is{' '}
-                <span className="font-semibold">{temperature}</span>
-              </span>
-            </Message>
+            <WeatherCardComponent
+              location={location}
+              temperature={parseInt(temperature)}
+            />
           )
         },
       },
